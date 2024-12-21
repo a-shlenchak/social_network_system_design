@@ -1,0 +1,449 @@
+openapi: "3.0.3"
+info:
+  title: API социальной сети для курса по System Design
+  version: "1.0"
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /posts:
+    get:
+      tags:
+        - posts
+      description: Posts list
+      parameters:
+        - $ref: '#/components/parameters/UserIDQuery'
+        - $ref: '#/components/parameters/LocationIDQuery'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        200:
+          $ref: '#/components/responses/PostsResponse'
+        5XX:
+          description: Server error
+    post:
+      tags:
+        - posts
+      description: Create post
+      requestBody:
+        $ref: '#/components/requestBodies/PostRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/PostResponse'
+        429:
+          description: Validation error
+        5XX:
+          description: Server error
+  /posts/{postID}:
+    get:
+      tags:
+        - posts
+      description: Get post
+      parameters:
+        - $ref: '#/components/parameters/PostID'
+      responses:
+        200:
+          $ref: '#/components/requestBodies/PostRequest'
+        404:
+          description: Post not found
+        5XX:
+          description: Server error
+  /posts/{postID}/likes:
+    post:
+      tags:
+        - posts
+      description: Add like to post
+      parameters:
+        - $ref: '#/components/parameters/PostID'
+      responses:
+        200:
+          description: OK
+        404:
+          description: Post not found
+        5XX:
+          description: Server error
+    delete:
+      tags:
+        - posts
+      description: Remove like from post
+      parameters:
+        - $ref: '#/components/parameters/PostID'
+      responses:
+        204:
+          description: No content response
+        404:
+          description: Post not found
+        5XX:
+          description: Server error
+  /posts/{postID}/comments:
+    get:
+      tags:
+        - posts
+      description: Get post comments
+      parameters:
+        - $ref: '#/components/parameters/PostID'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        200:
+          $ref: '#/components/responses/CommentsResponse'
+        404:
+          description: Post not found
+        5XX:
+          description: Server error
+    post:
+      tags:
+        - posts
+      description: Add comment to post
+      parameters:
+        - $ref: '#/components/parameters/PostID'
+      requestBody:
+        $ref: '#/components/requestBodies/CommentRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/CommentResponse'
+        404:
+          description: Post not found
+        429:
+          description: Validation error
+        5XX:
+          description: Server error
+  /photos:
+    post:
+      tags:
+        - images
+      description: Upload image
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  description: Image file
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Upload photo response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/PhotoID'
+        429:
+          description: Validation error
+        5XX:
+          description: Server error
+  /locations:
+    get:
+      tags:
+        - locations
+      description: Get locations list
+      parameters:
+        - $ref: '#/components/parameters/LocationSearchQuery'
+        - $ref: '#/components/parameters/Page'
+      responses:
+        200:
+          $ref: '#/components/responses/LocationsResponse'
+        5XX:
+          description: Server error
+    post:
+      tags:
+        - locations
+      description: Add location
+      requestBody:
+        $ref: '#/components/requestBodies/LocationRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/LocationResponse'
+        429:
+          description: Validation error
+        5XX:
+          description: Server error
+  /locations/{locationID}:
+    get:
+      tags:
+        - locations
+      description: Get location
+      parameters:
+        - $ref: '#/components/parameters/LocationID'
+      responses:
+        200:
+          $ref: '#/components/responses/LocationResponse'
+        404:
+          description: Location not found
+        5XX:
+          description: Server error
+  /subscriptions/{userID}:
+    post:
+      tags:
+        - subscriptions
+      description: Add a subscription to user
+      parameters:
+        - $ref: '#/components/parameters/UserID'
+      responses:
+        200:
+          description: OK
+        5XX:
+          description: Server error
+    delete:
+      tags:
+        - subscriptions
+      description: Remove subscription from user
+      parameters:
+        - $ref: '#/components/parameters/UserID'
+      responses:
+        204:
+          description: No content response
+        404:
+          description: Subscription not found
+        5XX:
+          description: Server error
+
+components:
+  parameters:
+    PostID:
+      name: postID
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PostID'
+    UserID:
+      name: userID
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UserID'
+    UserIDQuery:
+      name: userIDQuery
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/UserID'
+    LocationID:
+      name: locationID
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/LocationID'
+    LocationIDQuery:
+      name: locationIDQuery
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/LocationID'
+    LocationSearchQuery:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+        description: Location search query
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        description: Page number. 1 if not present
+  schemas:
+    PostID:
+      type: string
+      format: UUID
+      description: Post ID
+    UserID:
+      type: string
+      format: UUID
+      description: User ID
+    LocationID:
+      type: string
+      format: UUID
+      description: Location ID
+    PhotoID:
+      type: string
+      format: UUID
+      description: Photo ID
+    PhotoForPostRequestData:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PhotoID'
+        isMain:
+          type: boolean
+          default: false
+          description: Determines if current photo is main for post
+    PhotoForPostResponseData:
+      type: object
+      properties:
+        url:
+          type: string
+          description: Photo url
+        isMain:
+          type: boolean
+          default: false
+          description: Determines if current photo is main for post
+    PostBaseData:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Post title
+        text:
+          type: string
+          description: Post content
+    PostRequestData:
+      allOf:
+        -   $ref: '#/components/schemas/PostBaseData'
+        -   type: object
+            properties:
+              locationID:
+                $ref: '#/components/schemas/LocationID'
+              photos:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhotoForPostRequestData'
+    PostResponseBaseData:
+      allOf:
+        -   type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/PostID'
+        -   $ref: '#/components/schemas/PostBaseData'
+        -   type: object
+            properties:
+              location:
+                $ref: '#/components/schemas/LocationResponseData'
+              likes:
+                type: integer
+                description: Likes count
+              isLikedByUser:
+                type: boolean
+                description: Determines is current user liked current post
+              author:
+                $ref: '#/components/schemas/UserResponseData'
+    SinglePostResponseData:
+      allOf:
+        -   $ref: '#/components/schemas/PostResponseBaseData'
+        -   type: object
+            properties:
+              photos:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhotoForPostResponseData'
+    SinglePostInListResponseData:
+      allOf:
+        -   $ref: '#/components/schemas/PostResponseBaseData'
+        -   type: object
+            properties:
+              mainPhoto:
+                $ref: '#/components/schemas/PhotoForPostResponseData'
+    LocationBaseData:
+      type: object
+      properties:
+        country:
+          type: string
+          description: Country name
+        city:
+          type: string
+          description: City name
+        lat:
+          type: number
+          description: Latitude in degrees (values from -90 to 90)
+        lng:
+          type: number
+          description: Longitude in degrees (values from -180 to 180)
+    LocationResponseData:
+      allOf:
+        -   type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/LocationID'
+        -   $ref: '#/components/schemas/LocationBaseData'
+    LocationsResponseData:
+      allOf:
+        -   type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/LocationID'
+        -   $ref: '#/components/schemas/LocationBaseData'
+        -   type: object
+            properties:
+              postsCount:
+                type: integer
+                description: Count of posts about current location
+    UserResponseData:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UserID'
+        firstName:
+          type: string
+        lastName:
+          type: string
+    Comment:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Comment text
+  responses:
+    PostResponse:
+      description: Single post response data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SinglePostResponseData'
+    PostsResponse:
+      description: Multiple posts response data
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/SinglePostInListResponseData'
+    LocationResponse:
+      description: Single location response data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LocationResponseData'
+    LocationsResponse:
+      description: Multiple locations response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/LocationsResponseData'
+    CommentResponse:
+      description: Single comment response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Comment'
+    CommentsResponse:
+      description: Multiple comments response
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Comment'
+  requestBodies:
+    PostRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostRequestData'
+    CommentRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Comment'
+    LocationRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LocationBaseData'
