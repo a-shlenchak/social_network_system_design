@@ -41,12 +41,23 @@ paths:
         - $ref: '#/components/parameters/PostID'
       responses:
         200:
-          $ref: '#/components/requestBodies/PostRequest'
+          $ref: '#/components/responses/PostResponse'
         404:
           description: Post not found
         5XX:
           description: Server error
   /posts/{postID}/likes:
+    get:
+      tags:
+        - posts
+      description: Get likes for post
+      responses:
+        200:
+          $ref: '#/components/responses/LikesResponse'
+        404:
+          description: Post not found
+        5XX:
+          description: Server error
     post:
       tags:
         - posts
@@ -315,9 +326,6 @@ components:
             properties:
               location:
                 $ref: '#/components/schemas/LocationResponseData'
-              likes:
-                type: integer
-                description: Likes count
               isLikedByUser:
                 type: boolean
                 description: Determines is current user liked current post
@@ -388,6 +396,12 @@ components:
         text:
           type: string
           description: Comment text
+    Likes:
+      type: object
+      properties:
+        likes:
+          type: integer
+          description: Likes count
   responses:
     PostResponse:
       description: Single post response data
@@ -431,6 +445,12 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Comment'
+    LikesResponse:
+      description: Likes response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Likes'
   requestBodies:
     PostRequest:
       content:
