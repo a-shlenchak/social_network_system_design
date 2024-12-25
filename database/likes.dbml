@@ -1,0 +1,4 @@
+Table likes {
+  post_id uuid [primary key]
+  user_id uuid [primary key]
+}

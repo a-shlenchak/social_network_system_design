@@ -1,0 +1,8 @@
+Table locations {
+  id uuid [primary key]
+  country varchar
+  city varchar
+  lat decimal
+  lng decimal
+  created_at timestamp
+}

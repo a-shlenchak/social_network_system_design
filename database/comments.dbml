@@ -1,0 +1,7 @@
+Table comments {
+  id uuid [primary key]
+  post_id uuid
+  user_id uuid
+  text integer
+  created_at timestamp
+}

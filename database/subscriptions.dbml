@@ -1,0 +1,5 @@
+Table subscriptions {
+  user_id uuid [primary key]
+  followed_user_id uuid [primary key]
+  created_at timestamp
+}
