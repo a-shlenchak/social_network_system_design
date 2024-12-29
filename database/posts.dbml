@@ -1,0 +1,18 @@
+Table posts {
+  id uuid [primary key]
+  title varchar
+  text varchar
+  created_at timestamp
+  user_id uuid
+  location_id uuid
+}
+
+Table photos {
+  id uuid [primary key]
+  post_id uuid
+  is_main bool
+  url varchar
+  created_at timestamp
+}
+
+Ref: photos.post_id > posts.id
