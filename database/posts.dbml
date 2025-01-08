@@ -10,7 +10,6 @@ Table posts {
 Table photos {
   id uuid [primary key]
   post_id uuid
-  is_main bool
   url varchar
   created_at timestamp
 }
