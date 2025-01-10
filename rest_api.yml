@@ -281,20 +281,15 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/PhotoID'
-        isMain:
-          type: boolean
-          default: false
-          description: Determines if current photo is main for post
+        url:
+          type: string
+          description: Photo url
     PhotoForPostResponseData:
       type: object
       properties:
         url:
           type: string
           description: Photo url
-        isMain:
-          type: boolean
-          default: false
-          description: Determines if current photo is main for post
     PostBaseData:
       type: object
       properties:
