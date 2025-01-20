@@ -362,12 +362,14 @@ Traffic (write): 500 * 1 = 500 kb/s или 0.5 Mb/s
 ### Посты
 
 * Master-slave, async, RF 2
+* Sharding: key-based by user_id 
 * Hosts = 16 / 2 = 8
 * Hosts_with_replication = 8 * 2 = 16 
 
 ### Фото постов
 
-* RF 2
+* Master-slave, async, RF 2
+* Sharding: key-based by post_id
 * Hosts (SSD) = 12 / 6 = 2
 * Hosts_with_replication (SSD) = 2 * 2 = 4
 * Hosts (HDD) = 209 / 7 = 30
@@ -382,6 +384,7 @@ Traffic (write): 500 * 1 = 500 kb/s или 0.5 Mb/s
 ### Комментарии
 
 * Master-slave, async, RF 2
+* Sharding: key-based by post_id
 * Hosts = 18 / 3 = 6
 * Hosts_with_replication = 6 * 2 = 12
 
