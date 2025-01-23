@@ -356,3 +356,45 @@ Traffic (write): 500 * 1 = 500 kb/s или 0.5 Mb/s
 | throughput (~25kB/s) | 1   | 1          | 1          |
 
 Для подписок остановимся на 1 SSD (sata) объемом 1TB
+
+## Оценка постов
+
+### Посты
+
+* Master-slave, async, RF 2
+* Sharding: key-based by user_id 
+* Hosts = 16 / 2 = 8
+* Hosts_with_replication = 8 * 2 = 16 
+
+### Фото постов
+
+* Master-slave, async, RF 2
+* Hosts (SSD) = 12 / 6 = 2
+* Hosts_with_replication (SSD) = 2 * 2 = 4
+* Hosts (HDD) = 209 / 7 = 30
+* Hosts_with_replication (HDD) = 30 * 2 = 60
+
+### Оценки
+
+* Master-slave, async, RF 2
+* Hosts = 1 / 1 = 1
+* Hosts_with_replication = 1 * 2 = 2
+
+### Комментарии
+
+* Master-slave, async, RF 2
+* Sharding: key-based by post_id
+* Hosts = 18 / 3 = 6
+* Hosts_with_replication = 6 * 2 = 12
+
+### Локации
+
+* Master-slave, async, RF 2
+* Hosts = 3 / 3 = 1
+* Hosts_with_replication = 1 * 2 = 2
+
+### Подписки
+
+* Master-slave, async, RF 2
+* Hosts = 1 / 1 = 1
+* Hosts_with_replication = 1 * 2 = 2
