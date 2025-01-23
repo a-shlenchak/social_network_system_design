@@ -369,7 +369,6 @@ Traffic (write): 500 * 1 = 500 kb/s или 0.5 Mb/s
 ### Фото постов
 
 * Master-slave, async, RF 2
-* Sharding: key-based by post_id
 * Hosts (SSD) = 12 / 6 = 2
 * Hosts_with_replication (SSD) = 2 * 2 = 4
 * Hosts (HDD) = 209 / 7 = 30
