@@ -141,8 +141,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    $ref: '#/components/schemas/PhotoID'
+                  url:
+                    type: string
+                    description: Photo url
         429:
           description: Validation error
         5XX:
@@ -279,8 +280,6 @@ components:
     PhotoForPostRequestData:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/PhotoID'
         url:
           type: string
           description: Photo url
