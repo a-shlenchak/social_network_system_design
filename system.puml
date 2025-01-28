@@ -1,0 +1,79 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+AddRelTag("async", $lineStyle=DashedLine())
+
+Person(user, "User")
+System(api_gateway, "Api gateway", "Entry point. Handles auth")
+
+SystemQueue(kafka, "Message queue", "Kafka", "", "Message broker. Handles posts and subscriptions topics") {
+ContainerQueue(kafka.posts, "Posts", "topic", "")
+ContainerQueue(kafka.subscriptions, "Subscriptions", "topic", "")
+}
+
+System_Boundary(service.posts, "Posts service", "Handles posts CRUD and stores posts data") {
+Container(posts.app, "App", "Go", "Handles posts CRUD")
+ContainerDb(posts.db, "Storage", "PgSQL", "Stores posts data")
+
+Rel(posts.app, posts.db, "Save post data to database", "")
+}
+
+System_Boundary(service.media, "Media service", "Handles uploadable static files") {
+Container(media.app, "App", "Go", "Stores media into object storage")
+ContainerDb(media.db, "Storage", "Ceph", "Object storage for media")
+
+Rel(media.app, media.db, "Save data to object storage", "")
+}
+
+System_Boundary(service.subscriptions, "Subscriptions service", "Handles subscriptions and stores subscriptions data") {
+Container(subscriptions.app, "App", "Go", "Handles subscriptions operations")
+ContainerDb(subscriptions.db, "Storage", "PgSQL", "Stores subscriptions")
+
+Rel(subscriptions.app, subscriptions.db, "Save subscriptions data to database", "")
+}
+
+System_Boundary(service.comments, "Comments service", "Handles comments and stores comments data") {
+Container(comments.app, "App", "Go", "Handles comments operations")
+ContainerDb(comments.db, "Storage", "PgSQL", "Stores comments")
+
+Rel(comments.app, comments.db, "Save comments data to database", "")
+}
+
+System_Boundary(service.locations, "Locations service", "Handles locations and stores locations data") {
+Container(locations.app, "App", "Go", "Handles locations operations")
+ContainerDb(locations.db, "Storage", "PgSQL", "Stores locations")
+
+Rel(locations.app, locations.db, "Save locations data to database", "")
+}
+
+System_Boundary(service.likes, "Likes service", "Handles likes and stores likes data") {
+Container(likes.app, "App", "Go", "Handles likes operations")
+ContainerDb(likes.db, "Storage", "PgSQL", "Stores likes")
+
+Rel(likes.app, likes.db, "Save likes data to database", "")
+}
+
+System_Boundary(service.feeds, "Feeds service", "Handles user's and home feeds and stores feeds data") {
+Container(feeds.app, "App", "Go", "Operates with feeds")
+ContainerDb(feeds.db, "Storage", "Redis", "Stores feeds")
+
+Rel(feeds.app, feeds.db, "Save feeds data to database", "")
+}
+
+Rel(user, api_gateway, "Uses", "JSON/HTTPS")
+Rel(api_gateway, media.app, "Save photo", "JSON/HTTPS")
+Rel(api_gateway, posts.app, "Save post data\nGet single post", "JSON/HTTPS")
+Rel(api_gateway, subscriptions.app, "Subscribe\nUnsubscribe", "JSON/HTTPS")
+Rel(api_gateway, comments.app, "Add comment\nGet comments", "JSON/HTTPS")
+Rel(api_gateway, locations.app, "Search locations\nGet location\nAdd location", "JSON/HTTPS")
+Rel(api_gateway, likes.app, "Get likes\nAdd like\nDelete like", "JSON/HTTPS")
+
+Rel(posts.app, kafka.posts, "Post data", "", $tags="async")
+Rel(subscriptions.app, kafka.subscriptions, "Subscription data", "", $tags="async")
+Rel(kafka.subscriptions, feeds.app, "Get subscription data", "", $tags="async")
+Rel(kafka.posts, feeds.app, "Get posts data", "", $tags="async")
+
+Rel(feeds.app, posts.app, "Get additional posts", "JSON/HTTPS")
+Rel(feeds.app, subscriptions.app, "Get subscriptions for user", "JSON/HTTPS")
+
+@enduml
